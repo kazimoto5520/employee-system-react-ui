@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EmployeeService from "../services/EmployeeService";
+import Employee from "./Employee";
 
 const EmployeeList = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const EmployeeList = () => {
   const [loading, setloading] = useState(true);
 
   const fetchData = async () => {
-    setloading(false);
+    setloading(true);
     try {
       const response = await EmployeeService.getEmployees();
       setEmployee(response.data);
@@ -19,6 +20,18 @@ const EmployeeList = () => {
     }
     setloading(false);
   };
+
+  const deleteEmployee = (e, id) => {
+    e.preventDefault();
+    EmployeeService.deleteEmployee(id).then((res) => {
+      if (employees) {
+        setEmployee((prevElement) => {
+          return prevElement.filter((employees) => employees.id !== id);
+        });
+      }
+    });
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -55,37 +68,11 @@ const EmployeeList = () => {
           {!loading && (
             <tbody className="bg-white">
               {employees.map((employee) => (
-                <tr key={employee.id}>
-                  <td className="text-left px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {employee.firstName}
-                    </div>
-                  </td>
-                  <td className="text-left px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {employee.lastName}
-                    </div>
-                  </td>
-                  <td className="text-left px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {employee.emailId}
-                    </div>
-                  </td>
-                  <td className="text-right px-6 py-4 whitespace-nowrap">
-                    <a
-                      href="#"
-                      className="text-indigo-600 hover:text-indigo-800 px-4"
-                    >
-                      Edit
-                    </a>
-                    <a
-                      href="#"
-                      className="text-indigo-600 hover:text-indigo-800 "
-                    >
-                      Delete
-                    </a>
-                  </td>
-                </tr>
+                <Employee
+                  employee={employee}
+                  deleteEmployee={deleteEmployee}
+                  key={employee.id}
+                />
               ))}
             </tbody>
           )}

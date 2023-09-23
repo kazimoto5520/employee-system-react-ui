@@ -1,45 +1,40 @@
 import React from "react";
-import EmployeeService from "../services/EmployeeService";
+import { useEffect } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import EmployeeService from "../services/EmployeeService";
 
-const AddEmployee = () => {
+const UpdateEmployee = () => {
+  const { id } = useParams();
+
   const [employee, setEmployee] = useState({
-    id: "",
+    id: id,
     firstName: "",
     lastName: "",
     emailId: "",
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await EmployeeService.getEmployeeById(id);
+        setEmployee(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const value = e.target.value;
     setEmployee({ ...employee, [e.target.name]: value });
   };
 
-  const saveEmployee = (e) => {
+  const updateEmployee = (e) => {
     e.preventDefault();
-    EmployeeService.saveEmployee(employee)
-      .then((response) => {
-        console.log(response);
-        navigate("/employeeList");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   };
-
-  const reset = (e) => {
-    e.preventDefault();
-    setEmployee({
-      id: "",
-      firstName: "",
-      lastName: "",
-      emailId: "",
-    });
-  };
-
   return (
     <div className="flex max-w-2xl mx-auto shadow border-b">
       <div className="px-8 py-8">
@@ -91,17 +86,14 @@ const AddEmployee = () => {
 
         <div className="items-center justify-center h-14 w-full my-4 space-x-4 pt-4">
           <button
-            onClick={saveEmployee}
+            onClick={updateEmployee}
             className="rounded text-white font-semibold bg-green-400 hover:bg-green-700 px-2 py-2"
           >
-            Save
+            Update
           </button>
 
-          <button
-            onClick={reset}
-            className="rounded text-white font-semibold bg-red-400 hover:bg-red-700 px-2 py-2"
-          >
-            Clear
+          <button className="rounded text-white font-semibold bg-red-400 hover:bg-red-700 px-2 py-2">
+            Cancel
           </button>
         </div>
       </div>
@@ -109,4 +101,4 @@ const AddEmployee = () => {
   );
 };
 
-export default AddEmployee;
+export default UpdateEmployee;
