@@ -9,17 +9,18 @@ const EmployeeList = () => {
 
   const [loading, setloading] = useState(true);
 
+  const fetchData = async () => {
+    setloading(false);
+    try {
+      const response = await EmployeeService.getEmployees();
+      setEmployee(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setloading(false);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      setloading(false);
-      try {
-        const response = await EmployeeService.getEmployees();
-        setEmployee(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-      setloading(false);
-    };
+    fetchData();
   }, []);
 
   return (
