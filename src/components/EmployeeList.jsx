@@ -11,7 +11,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setloading(true);
+      setloading(false);
       try {
         const response = await EmployeeService.getEmployees();
         setEmployee(response.data);
